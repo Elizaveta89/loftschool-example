@@ -92,7 +92,13 @@ function hasProperty(obj, prop) {
  */
 function getEnumProps(obj) {
 
+    var result = [];
 
+     for (var key in obj) {
+         result.push(key);
+     }
+
+     return result;
 }
 
 /*
@@ -100,6 +106,15 @@ function getEnumProps(obj) {
  Функция должна перебрать все свойства объекта, преобразовать их имена в верхний регистра и вернуть в виде массива
  */
 function upperProps(obj) {
+
+    var result = [];
+
+    for (var key in obj) {
+        var uppKey = key.toUpperCase();
+        result.push(uppKey);
+    }
+
+    return result;
 }
 
 /*
@@ -107,7 +122,32 @@ function upperProps(obj) {
  Напишите аналог встроенного метода slice для работы с массивами
  */
 function slice(array, from, to) {
+
+    var result = [];
+
+    if (!from) {
+        from = 0;
+    } else if (from < 0){
+        from = array.length + from;
+    }
+
+    if (!to) {
+        to = array.length;
+    } else if (to < 0) {
+        to = array.length + to;
+    }
+
+    if (array.length < to) {
+        throw new Error('длина массива меньше');
+    }
+
+    for (from; from < to; from++) {
+        result.push(array[from]);
+    }
+
+    return result;
 }
+
 
 /*
  Задача 9 *:
@@ -115,16 +155,17 @@ function slice(array, from, to) {
  Proxy должен перехватывать все попытки записи значений свойств и возводить это значение в квадрат
  */
 function createProxy(obj) {
+
 }
 
-export {
-    forEach,
-    map,
-    reduce,
-    deleteProperty,
-    hasProperty,
-    getEnumProps,
-    upperProps,
-    slice,
-    createProxy
-};
+// export {
+//     forEach,
+//     map,
+//     reduce,
+//     deleteProperty,
+//     hasProperty,
+//     getEnumProps,
+//     upperProps,
+//     slice,
+//     createProxy
+// };
