@@ -53,6 +53,7 @@ function reduce(array, fn, initial) {
                 result = fn(initial, array[i], i, array);
             } else {
                 initial = array[i];
+                i += 1;
                 result = fn(initial, array[i], i, array);
             }
 
@@ -141,6 +142,10 @@ function slice(array, from, to) {
         throw new Error('длина массива меньше');
     }
 
+    if (from > to && from > array.length && to > array.length) {
+        return [];
+    }
+
     for (from; from < to; from++) {
         result.push(array[from]);
     }
@@ -158,14 +163,14 @@ function createProxy(obj) {
 
 }
 
-// export {
-//     forEach,
-//     map,
-//     reduce,
-//     deleteProperty,
-//     hasProperty,
-//     getEnumProps,
-//     upperProps,
-//     slice,
-//     createProxy
-// };
+export {
+    forEach,
+    map,
+    reduce,
+    deleteProperty,
+    hasProperty,
+    getEnumProps,
+    upperProps,
+    slice,
+    createProxy
+};
