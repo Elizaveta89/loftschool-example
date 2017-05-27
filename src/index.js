@@ -38,7 +38,8 @@ function createAWithHref(hrefValue) {
  * @param {Element} where - куда вставлять
  */
 function prepend(what, where) {
-    var firstElement = where.children[1];
+
+    var firstElement = where.firstChild;
 
     where.insertBefore(what, firstElement);
 }
@@ -83,7 +84,15 @@ function findAllPSiblings(where) {
  */
 function findError(where) {
 
+    var children = where.children;
+    var result = [];
 
+    for (var i=0; i < children.length; i++) {
+        var text = children[i].innerHTML;
+        result.push(text);
+    }
+
+    return result;
 }
 
 /**
@@ -100,6 +109,15 @@ function findError(where) {
  * должно быть преобразовано в <div></div><p></p>
  */
 function deleteTextNodes(where) {
+    var nodes = where.childNodes;
+
+    for (var i=0; i < nodes.length; i++) {
+
+        if (nodes[i].nodeType === 3) {
+            nodes[i].remove();
+        }
+    }
+
 }
 
 /**
@@ -113,6 +131,15 @@ function deleteTextNodes(where) {
  * должно быть преобразовано в <span><div><b></b></div><p></p></span>
  */
 function deleteTextNodesRecursive(where) {
+
+    deleteTextNodes(where);
+
+    var child = where.children;
+
+    for (var i = 0; i < child.length; i++) {
+        deleteTextNodesRecursive(child[i]);
+    }
+
 }
 
 /**
