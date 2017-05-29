@@ -23,6 +23,25 @@ let homeworkContainer = document.querySelector('#homework-container');
  * @return {Element}
  */
 function createDiv() {
+
+    var div = document.createElement('div');
+    var px = 'px';
+    div.setAttribute('class', 'draggable-div');
+
+    var randomColor = '#' + Math.random().toString(16).substr(-6);
+    var randomWidth = Math.random() * 50 + px;
+    var randomHeight = Math.random() * 50 + px;
+    var randomTop = Math.random() * 100 + px;
+    var randomLeft = Math.random() * 100 + px;
+
+    div.style.background = randomColor;
+    div.style.width = randomWidth;
+    div.style.height = randomHeight;
+    div.style.top = randomTop;
+    div.style.left = randomLeft;
+    div.style.position = 'absolute';
+
+    return div;
 }
 
 /**
