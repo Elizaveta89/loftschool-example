@@ -50,6 +50,8 @@ function createDiv() {
  * @param {Element} target
  */
 function addListeners(target) {
+
+
 }
 
 let addDivButton = homeworkContainer.querySelector('#addDiv');
