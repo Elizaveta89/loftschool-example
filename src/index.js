@@ -26,6 +26,30 @@ function delayPromise(seconds) {
  */
 function loadAndSortTowns() {
 
+    var promise = new Promise(function (resolve, reject) {
+        var ajax = new XMLHttpRequest();
+
+        ajax.open('GET', 'https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json', true);
+        ajax.onload = function() {
+            var city = JSON.parse(ajax.response);
+
+            var cityArr = city.sort(function (a,b) {
+                if (a.name > b.name) {
+                    return 1;
+                }
+                if (a.name < b.name) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            });
+
+            resolve(cityArr);
+        };
+        ajax.send();
+    })
+
+    return promise;
 }
 
 export {
