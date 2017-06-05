@@ -87,16 +87,15 @@ let filterInput = homeworkContainer.querySelector('#filter-input');
 let filterResult = homeworkContainer.querySelector('#filter-result');
 let townsPromise;
 
-;
-
 loadTowns().then(function () {
     loadingBlock.style.display = 'none';
     filterBlock.style.display = 'block';
 })
 
 filterInput.addEventListener('keyup', function() {
-    loadTowns();
-
+    var value = filterInput.value;
+    filterResult.innerHTML = value;
+  
 });
 
 export {
