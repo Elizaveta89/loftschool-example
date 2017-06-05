@@ -85,17 +85,33 @@ let loadingBlock = homeworkContainer.querySelector('#loading-block');
 let filterBlock = homeworkContainer.querySelector('#filter-block');
 let filterInput = homeworkContainer.querySelector('#filter-input');
 let filterResult = homeworkContainer.querySelector('#filter-result');
-let townsPromise;
+let townsPromise = loadTowns();
+let towns;
 
-loadTowns().then(function () {
+townsPromise.then(function (result) {
     loadingBlock.style.display = 'none';
     filterBlock.style.display = 'block';
+    towns = result;
 })
 
 filterInput.addEventListener('keyup', function() {
-    var value = filterInput.value;
-    filterResult.innerHTML = value;
-  
+    var val = filterInput.value;
+    var townsArr = [];
+
+    if (!val) {
+        filterResult.innerHTML = '';
+        return
+    }
+
+    for (var i = 0; i < towns.length; i++) {
+        var town = towns[i];
+        if (isMatching(town.name, val) === true) {
+            townsArr.push(town.name);
+        }
+    }
+
+    filterResult.innerHTML = townsArr.length ? townsArr.join('<br>'): 'Ничего не найдено';
+
 });
 
 export {
