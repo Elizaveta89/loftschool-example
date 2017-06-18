@@ -39,9 +39,15 @@ let addValueInput = homeworkContainer.querySelector('#add-value-input');
 let addButton = homeworkContainer.querySelector('#add-button');
 let listTable = homeworkContainer.querySelector('#list-table tbody');
 
-window.onload = updateView;
+window.onload = function () {
+    updateView();
+}
 
 filterNameInput.addEventListener('keyup', function() {
+    var val = filterNameInput.value;
+    console.log(filterNameInput, val);
+    updateView(val);
+
 });
 
 addButton.addEventListener('click', () => {
@@ -57,13 +63,12 @@ function addCookie(name, value) {
 function deleteCookie(name) {
     var date = new Date();
     date.setTime(date.getTime() - 1);
-
     document.cookie = name += '=; expires=' + date.toGMTString();
 }
 
 
-function updateView () {
-
+function updateView (filt) {
+    removeContent(listTable);
     var cookies = document.cookie;
     var cookiesArr = cookies.split(';');
 
@@ -71,6 +76,11 @@ function updateView () {
         var cookieNameValue = cookiesArr[i].split('=');
         var cookieName = cookieNameValue[0];
         var cookieValue = cookieNameValue[1];
+
+        if(filt && cookieName.indexOf(filt) === -1 && cookieValue.indexOf(filt) === -1) {
+            continue;
+        }
+
         var tr = listTable.insertRow(-1);
         addTable(tr, cookieName);
         addTable(tr, cookieValue);
@@ -80,7 +90,7 @@ function updateView () {
         buttonRemove.innerText = 'Удалить';
         buttonRemove.addEventListener('click', () => {
             deleteCookie(cookieName);
-            removeContent(listTable, buttonRemove);
+            removeContent(listTable, buttonRemove, cookieName);
             updateView();
         });
         addTable(tr, buttonRemove);
@@ -96,13 +106,19 @@ function updateView () {
     }
 }
 
-function removeContent (parent, button) {
+function removeContent (parent, button, cookie) {
     if (button) {
         button.removeEventListener('click', () => {
-            deleteCookie(cookieName);
+            deleteCookie(cookie);
             updateView();
         })
     }
     parent.innerHTML = '';
+}
+
+function isMatching (full, chunk) {
+    full = full.toLowerCase();
+    chunk = chunk.toLowerCase();
+    return full.indexOf(chunk) >= 0;
 }
 
