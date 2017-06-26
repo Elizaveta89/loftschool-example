@@ -51,7 +51,23 @@ function createDiv() {
  */
 function addListeners(target) {
 
+    target.addEventListener('mousedown', function(e) {
 
+        var deltaX = e.pageX - target.offsetLeft;
+        var deltaY = e.pageY - target.offsetTop;
+
+        window.addEventListener('mousemove', move);
+
+        window.addEventListener('mouseup', function() {
+            window.removeEventListener('mousemove', move);
+        })
+
+        function move(e) {
+            e.preventDefault();
+            target.style.left = e.pageX - deltaX + 'px';
+            target.style.top = e.pageY - deltaY + 'px';
+        }
+    });
 }
 
 let addDivButton = homeworkContainer.querySelector('#addDiv');
