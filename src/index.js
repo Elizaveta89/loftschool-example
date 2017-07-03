@@ -31,23 +31,48 @@ function vkInit() {
 }
 
 function updateView() {
-  leftListView.innerHTML = templateFn(leftListData);
-  rightListView.innerHTML = templateFn(rightListData);
+  leftListView.innerHTML = templateFn({items: leftListData});
+  rightListView.innerHTML = templateFn({items: rightListData});
+
+  var friendElem = document.getElementsByClassName('friend');
+  for(var i=0; i<friendElem.length; i++){
+    friendElem[i].addEventListener('mousedown', function(e) {
+      var elem = e.currentTarget;
+      elem.style.width = '300px';
+      elem.style.position = 'absolute';
+      elem.style.zIndex = '100';
+
+      selectedElem = elem;
+      selectedElemDeltaX = e.pageX - selectedElem.offsetLeft;
+      selectedElemDeltaY = e.pageY - selectedElem.offsetTop;
+    })
+  }
 }
 
 function getDataByUserId (id) {
+  var resultIndex = -1;
   for (var i = 0; i < leftListData.length; i++) {
-    console.log(leftListData[i], 'левый');
-    if(leftListData[i].items.id === id) {
-      return leftListData.splice(i, 1);
+    if (leftListData[i].id == id) {
+      resultIndex = i;
+      break;
     }
   }
 
+  if (resultIndex != -1) {
+    return leftListData.splice(resultIndex, 1)[0];
+  }
+
+  resultIndex = -1;
+
   for (var i = 0; i < rightListData.length; i++) {
-    console.log(rightListData[i], 'правый');
-    if(rightListData[i].items.id === id) {
-      return rightListData.splice(i, 1);
+    if (rightListData[i].id == id) {
+      resultIndex = i;
+      break;
     }
+  }
+
+  if (resultIndex != -1) {
+    return rightListData.splice(resultIndex, 1)[0];
   }
 }
 
@@ -81,44 +106,28 @@ window.addEventListener('mousemove', function (e) {
 window.addEventListener('mouseup', function(e) {
   if (!selectedElem) return;
 
-  var leftRect = leftListView.getBoundingClientRect();
-  var rightRect = rightListView.getBoundingClientRect();
   var selectedCenterX = e.pageX;
   var selectedCenterY = e.pageY;
-  var isInLeftRect = selectedCenterX > leftRect.left && selectedCenterX < leftRect.right && selectedCenterY > leftRect.top &&  selectedCenterY < leftRect.bottom;
-  var isInRightRect = selectedCenterX > rightRect.left && selectedCenterX < rightRect.right && selectedCenterY > rightRect.top &&  selectedCenterY < rightRect.bottom;
+  var body = document.querySelector('body');
+  var isInLeftRect = selectedCenterX < body.offsetWidth /2;
+  var isInRightRect = selectedCenterX > body.offsetWidth /2;
   var idSelected = selectedElem.getAttribute('data-id');
+  var userData = getDataByUserId(idSelected);
 
   if (isInLeftRect) {
-    leftListData.push(getDataByUserId(idSelected));
+    leftListData.push(userData);
   } else if (isInRightRect) {
-    rightListData.push(getDataByUserId(idSelected));
+    rightListData.push(userData);
   }
-
-
+  updateView();
+  selectedElem = null;
 })
 
 new Promise(resolve => window.onload = resolve)
   .then(() => vkInit())
   .then(() => vkApi('friends.get', {fields: 'photo_200'}))
   .then(function(response) {
-    leftListData = response;
+    leftListData = response.items.splice(0, 5);
     updateView();
-  })
-  .then(function() {
-    var friendElem = leftListView.getElementsByClassName('friend');
-    for(var i=0; i<friendElem.length; i++){
-      friendElem[i].addEventListener('mousedown', function(e) {
-        var elem = e.currentTarget;
-        elem.style.width = '300px';
-        elem.style.position = 'absolute';
-        elem.style.zIndex = '100';
-
-        selectedElem = elem;
-        selectedElemDeltaX = e.pageX - selectedElem.offsetLeft;
-        selectedElemDeltaY = e.pageY - selectedElem.offsetTop;
-
-      })
-    }
   })
   // .catch(e => alert('Ошибка: ' + e.message));
