@@ -42,6 +42,8 @@ var template = `
 `;
 
 var templateFn = Handlebars.compile(template);
+var buttonSave = document.querySelector('.button-save');
+var buttonClear = document.querySelector('.button-clear');
 var leftListView = document.querySelector('.content-all');
 var rightListView = document.querySelector('.content-selected');
 var searchInputRight = document.querySelector('.search__input--right');
@@ -53,21 +55,24 @@ var selectedElemDeltaY = 0;
 var leftListData = [];
 var rightListData = [];
 
-searchInputRight.addEventListener('input', function (e) {
+searchInputRight.addEventListener('input', function () {
   var value = this.value;
-
-  rightListData = rightListData.filter(function(user) {
-    return user.indexOf(value) !== -1;
+  var newArray = rightListData.filter(function(user) {
+    console.log(user.first_name.indexOf(value));
+    return user.first_name.indexOf(value) != -1 || user.last_name.indexOf(value) != -1;
   });
 
-  updateView();
-
+  updateView(leftListData, newArray);
 })
 
 searchInputLeft.addEventListener('input', function (e) {
   var value = this.value;
+  var newArray = leftListData.filter(function(user) {
+    console.log(user.first_name.indexOf(value));
+    return user.first_name.indexOf(value) != -1 || user.last_name.indexOf(value) != -1;
+  });
 
-
+  updateView(newArray, rightListData);
 })
 
 window.addEventListener('mousemove', function (e) {
@@ -83,13 +88,36 @@ window.addEventListener('mouseup', function(e) {
 
   var selectedCenterX = e.pageX;
   var body = document.querySelector('body');
+  var friendsLeft = leftListView.children;
+  var friendsRight = rightListView.children;
   var isInLeftRect = selectedCenterX < body.offsetWidth /2;
   var isInRightRect = selectedCenterX > body.offsetWidth /2;
   var idSelected = selectedElem.getAttribute('data-id');
   var userData = getDataByUserId(idSelected);
 
   if (isInLeftRect) {
-    leftListData.push(userData);
+    for(var i=0; i < friendsLeft.length; i++) {
+
+      var elemCenterX = friendsLeft[i].offsetLeft + friendsLeft[i].offsetWidth / 2;
+      var elemCenterY = friendsLeft[i].offsetTop + friendsLeft[i].offsetHeight / 2;
+      var distense = (elemCenterX - e.pageX) ^ 2 + (elemCenterY - e.pageY) ^ 2;
+
+    }
+
+      // var a = [1, 3, 5, 2];
+      // var min = 999;
+      // for (var i = 0; i < a.length; i++) {
+      //   min = a[i];
+      //   if (a[i] < min){
+      //     return min;
+      //   }
+      // }
+      // console.log(min);
+
+      // if (leftListData[i].getBoundingClientRect() == userData.getBoundingClientRect()) {
+      //
+      // }
+
   } else if (isInRightRect) {
     rightListData.push(userData);
   }
@@ -104,11 +132,33 @@ new Promise(resolve => window.onload = resolve)
     leftListData = response.items;
     updateView();
   })
+  .then(function() {
+    buttonSave.addEventListener('click', function() {
+      var serialLeftList = JSON.stringify(leftListData);
+      var seriaRightList = JSON.stringify(rightListData);
+      localStorage.setItem('leftList', serialLeftList);
+      localStorage.setItem('rightList', seriaRightList);
+      buttonClear.style.opacity = 1;
+    })
+
+    if (localStorage.getItem('leftList') || localStorage.getItem('rightList')) {
+      buttonClear.style.opacity = 1;
+      var returnLeft = JSON.parse(localStorage.getItem("leftList"));
+      var returnRight = JSON.parse(localStorage.getItem("rightList"));
+      updateView(returnLeft, returnRight);
+    }
+
+    buttonClear.addEventListener('click', function() {
+      window.localStorage.clear();
+      location.reload();
+      updateView();
+    })
+  })
   // .catch(e => alert('Ошибка: ' + e.message));
 
-function updateView() {
-  leftListView.innerHTML = templateFn({items: leftListData});
-  rightListView.innerHTML = templateFn({items: rightListData});
+function updateView(arrayLeft, arrayRight) {
+  leftListView.innerHTML = templateFn({items: arrayLeft || leftListData});
+  rightListView.innerHTML = templateFn({items: arrayRight || rightListData});
 
   var buttonPlus = document.querySelectorAll('.button');
   for (var i=0; i <  buttonPlus.length; i++) {
