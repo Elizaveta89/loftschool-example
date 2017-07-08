@@ -34,7 +34,11 @@ function vkInit() {
 var template = `
 {{#each items}}
     <div class="friend" data-id="{{id}}">
+        {{#if photo_200}}
         <img src="{{photo_200}}">
+        {{else}}
+        <img src="no-photo-cat.jpg">
+        {{/if}}
         <div class="name">{{first_name}} {{last_name}}</div>
         <button class="button">+</button>
     </div>
@@ -58,8 +62,7 @@ var rightListData = [];
 searchInputRight.addEventListener('input', function () {
   var value = this.value;
   var newArray = rightListData.filter(function(user) {
-    console.log(user.first_name.indexOf(value));
-    return user.first_name.indexOf(value) != -1 || user.last_name.indexOf(value) != -1;
+    return isMatching(user.first_name, value) || isMatching(user.last_name, value);
   });
 
   updateView(leftListData, newArray);
@@ -68,8 +71,7 @@ searchInputRight.addEventListener('input', function () {
 searchInputLeft.addEventListener('input', function (e) {
   var value = this.value;
   var newArray = leftListData.filter(function(user) {
-    console.log(user.first_name.indexOf(value));
-    return user.first_name.indexOf(value) != -1 || user.last_name.indexOf(value) != -1;
+    return isMatching(user.first_name, value) || isMatching(user.last_name, value);
   });
 
   updateView(newArray, rightListData);
@@ -96,31 +98,17 @@ window.addEventListener('mouseup', function(e) {
   var userData = getDataByUserId(idSelected);
 
   if (isInLeftRect) {
-    for(var i=0; i < friendsLeft.length; i++) {
+    var elemIndexLeftList = elemIndexMinDistance(e, friendsLeft);
+    console.log(elemIndexMinDistance(e, friendsLeft));
 
-      var elemCenterX = friendsLeft[i].offsetLeft + friendsLeft[i].offsetWidth / 2;
-      var elemCenterY = friendsLeft[i].offsetTop + friendsLeft[i].offsetHeight / 2;
-      var distense = (elemCenterX - e.pageX) ^ 2 + (elemCenterY - e.pageY) ^ 2;
-
-    }
-
-      // var a = [1, 3, 5, 2];
-      // var min = 999;
-      // for (var i = 0; i < a.length; i++) {
-      //   min = a[i];
-      //   if (a[i] < min){
-      //     return min;
-      //   }
-      // }
-      // console.log(min);
-
-      // if (leftListData[i].getBoundingClientRect() == userData.getBoundingClientRect()) {
-      //
-      // }
+    leftListData.splice(elemIndexLeftList,0, userData);
 
   } else if (isInRightRect) {
-    rightListData.push(userData);
+    var elemIndexRightList = elemIndexMinDistance(e, friendsRight);
+    console.log(elemIndexMinDistance(e, friendsRight));
+    rightListData.splice(elemIndexRightList,0, userData);
   }
+
   updateView();
   selectedElem = null;
 })
@@ -143,9 +131,9 @@ new Promise(resolve => window.onload = resolve)
 
     if (localStorage.getItem('leftList') || localStorage.getItem('rightList')) {
       buttonClear.style.opacity = 1;
-      var returnLeft = JSON.parse(localStorage.getItem("leftList"));
-      var returnRight = JSON.parse(localStorage.getItem("rightList"));
-      updateView(returnLeft, returnRight);
+      leftListData = JSON.parse(localStorage.getItem("leftList"));
+      rightListData = JSON.parse(localStorage.getItem("rightList"));
+      updateView();
     }
 
     buttonClear.addEventListener('click', function() {
@@ -154,7 +142,7 @@ new Promise(resolve => window.onload = resolve)
       updateView();
     })
   })
-  // .catch(e => alert('Ошибка: ' + e.message));
+  .catch(e => alert('Ошибка: ' + e.message));
 
 function updateView(arrayLeft, arrayRight) {
   leftListView.innerHTML = templateFn({items: arrayLeft || leftListData});
@@ -224,4 +212,26 @@ function getDataByUserId (id) {
     wasInRight = true;
     return rightListData.splice(resultIndex, 1)[0];
   }
+}
+
+function isMatching (full, chunk) {
+  full = full.toLowerCase();
+  chunk = chunk.toLowerCase();
+  return full.indexOf(chunk) >= 0;
+}
+
+function elemIndexMinDistance (event, array) {
+  var minDistance = Number.MAX_VALUE;
+  var elemIndex;
+  for(var i=0; i < array.length; i++) {
+    var elemCenterX = array[i].offsetLeft + array[i].offsetWidth / 2;
+    var elemCenterY = array[i].offsetTop + array[i].offsetHeight / 2;
+    var distance = Math.sqrt((elemCenterX - event.pageX)*(elemCenterX - event.pageX) + (elemCenterY - event.pageY)*(elemCenterY - event.pageY));
+
+    if (minDistance > distance) {
+      minDistance = distance;
+      elemIndex = i + 1;
+    }
+  }
+  return elemIndex;
 }
