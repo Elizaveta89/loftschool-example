@@ -2,8 +2,170 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
   <title>{{htmlWebpackPlugin.options.title}}</title>
 </head>
 <body>
+  <style>
+
+    body, html {
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .map {
+      display: block;
+      width: 100%;
+      height: 100px;
+    }
+
+    .balloon {
+      background: white;
+      width: 300px;
+      border-radius: 20px;
+      color: grey;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 30px;
+      color: white;
+      background: lightcoral;
+      border-radius: 20px 20px 0 0 ;
+    }
+    .icon {
+      flex-basis: 10%;
+      width: 10px;
+      height: 10px;
+    }
+    
+    .address {
+      color: white;
+      flex-basis: 80%;
+    }
+
+    .close {
+      flex-basis: 10%;
+      width: 12px;
+      height: 10px;
+      cursor: pointer;
+      padding: 20px 0 20px;
+    }
+
+    .content {
+      padding: 10px 20px;
+    }
+
+    .reviews-all {
+      height: 150px;
+      overflow: hidden;
+    }
+
+    .reviews-all__header {
+      margin-bottom: 5px;
+    }
+
+    .reviews-all__name {
+      font-weight: 600;
+    }
+
+    .reviews-all__place {
+      margin: 0 10px;
+    }
+
+    .review {
+      width: 90%;
+    }
+
+    .review__title {
+      text-transform: uppercase;
+      color: lightcoral;
+    }
+
+    .form__row {
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    .input, .textarea {
+      width: 100%;
+      border-radius: 15px;
+      border: 1px solid grey;
+      padding: 10px;
+      font-size: 12px;
+    }
+
+    .textarea {
+      height: 80px;
+    }
+
+    .input:focus, .textarea:focus {
+      outline: none;
+    }
+
+    .form__button {
+      text-align: right;
+    }
+
+    .button {
+      color: white;
+      background: lightcoral;
+      padding: 5px 10px 8px 10px;
+      border: 1px solid transparent;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      background: white;
+      border: 1px solid lightcoral;
+      color: lightcoral;
+    }
+
+
+
+  </style>
+  <div class="map" id="map"></div>
+  <div class="balloon">
+    <div class="header">
+      <img src="placeholder.svg" class="icon">
+      <div class="address">{{address}}</div>
+      <img src="close.svg" class="close">
+    </div>
+    <div class="content">
+      <div class="reviews-all">
+        <div class="reviews-all__empty">Отзывов пока нет</div>
+        <div class="reviews-all__header">
+          <span class="reviews-all__name">{{name}}</span>
+          <span class="reviews-all__place">{{place}}</span>
+          <span class="reviews-all__date">{{date}}</span>
+        </div>
+        <div class="reviews-all__text">
+          {{text}}
+        </div>
+      </div>
+      <div class="review">
+        <div class="review__title">Ваш отзыв</div>
+        <form class="form">
+          <div class="form__row">
+            <input class="input" type="text" name="name" placeholder="Ваше имя">
+          </div>
+          <div class="form__row">
+            <input class="input" type="text" name="place" placeholder="Укажите место">
+          </div>
+          <div class="form__row">
+            <textarea class="textarea" type="textarea" name="review" placeholder="Поделитесь впечатлениями"></textarea>
+          </div>
+          <div class="form__row form__button">
+            <button class="button" type="submit">Добавить</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
